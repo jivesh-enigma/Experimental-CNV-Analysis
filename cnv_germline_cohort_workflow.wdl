@@ -22,7 +22,7 @@
 
 version 1.0
 
-import "../cnv_common_tasks.wdl" as CNVTasks
+import "https://raw.githubusercontent.com/broadinstitute/gatk/4.5.0.0/scripts/cnv_wdl/cnv_common_tasks.wdl" as CNVTasks
 
 workflow CNVGermlineCohortWorkflow {
 
@@ -41,6 +41,7 @@ workflow CNVGermlineCohortWorkflow {
       File ref_fasta_fai
       File ref_fasta
       String gatk_docker
+      String destination_bucket
 
       ##################################
       #### optional basic arguments ####
@@ -399,43 +400,58 @@ workflow CNVGermlineCohortWorkflow {
             outfile = "genotyped_intervals_vcf_index.paths.list"
     }
 
+    call data_transfer {
+        input:
+            cohort_entity_id = cohort_entity_id,
+            bucket_url = destination_bucket,
+            
+            filtered_intervals = FilterIntervals.filtered_intervals,
+            contig_ploidy_model_tar = DetermineGermlineContigPloidyCohortMode.contig_ploidy_model_tar,
+            
+            gcnv_model_tars = GermlineCNVCallerCohortMode.gcnv_model_tar
+    }
+
 
     output {
-        File preprocessed_intervals = PreprocessIntervals.preprocessed_intervals
-        Array[File] read_counts_entity_ids = CollectCounts.entity_id
-        Array[File] read_counts = CollectCounts.counts
-        File? annotated_intervals = AnnotateIntervals.annotated_intervals
-        File filtered_intervals = FilterIntervals.filtered_intervals
-        File contig_ploidy_model_tar = DetermineGermlineContigPloidyCohortMode.contig_ploidy_model_tar
-        File contig_ploidy_calls_tar = DetermineGermlineContigPloidyCohortMode.contig_ploidy_calls_tar
-        File contig_ploidy_calls_tar_path_list = WritePloidyCalls.path_list
-        Array[File] sample_contig_ploidy_calls_tars = ScatterPloidyCallsBySample.sample_contig_ploidy_calls_tar
-        Array[File] gcnv_model_tars = GermlineCNVCallerCohortMode.gcnv_model_tar
-        Array[Array[File]] gcnv_calls_tars = GermlineCNVCallerCohortMode.gcnv_call_tars
-        File gcnv_calls_tars_path_list = WriteGCNVCalls.path_list
-        Array[File] gcnv_tracking_tars = GermlineCNVCallerCohortMode.gcnv_tracking_tar
+        # File preprocessed_intervals = PreprocessIntervals.preprocessed_intervals
+        # Array[File] read_counts_entity_ids = CollectCounts.entity_id
+        # Array[File] read_counts = CollectCounts.counts
+        # File? annotated_intervals = AnnotateIntervals.annotated_intervals
+        # File filtered_intervals = FilterIntervals.filtered_intervals
+        # File contig_ploidy_model_tar = DetermineGermlineContigPloidyCohortMode.contig_ploidy_model_tar
+        # File contig_ploidy_calls_tar = DetermineGermlineContigPloidyCohortMode.contig_ploidy_calls_tar
+        # File contig_ploidy_calls_tar_path_list = WritePloidyCalls.path_list
+        # Array[File] sample_contig_ploidy_calls_tars = ScatterPloidyCallsBySample.sample_contig_ploidy_calls_tar
+        # Array[File] gcnv_model_tars = GermlineCNVCallerCohortMode.gcnv_model_tar
+        # Array[Array[File]] gcnv_calls_tars = GermlineCNVCallerCohortMode.gcnv_call_tars
+        # File gcnv_calls_tars_path_list = WriteGCNVCalls.path_list
+        # Array[File] gcnv_tracking_tars = GermlineCNVCallerCohortMode.gcnv_tracking_tar
 
-        Array[File] genotyped_intervals_vcfs = PostprocessGermlineCNVCalls.genotyped_intervals_vcf
-        File genotyped_intervals_vcfs_path_list = WriteIntervals.path_list
-        Array[File] genotyped_intervals_vcf_indexes = PostprocessGermlineCNVCalls.genotyped_intervals_vcf_index
-        File genotyped_intervals_vcf_indexes_path_list = WriteIntervalIndexes.path_list
-        Array[File] genotyped_segments_vcfs = PostprocessGermlineCNVCalls.genotyped_segments_vcf
-        File genotyped_segments_vcfs_path_list = WriteSegments.path_list
-        Array[File] genotyped_segments_vcf_indexes = PostprocessGermlineCNVCalls.genotyped_segments_vcf_index
-        File genotyped_segments_vcf_indexes_path_list = WriteSegmentIndexes.path_list
+        # Array[File] genotyped_intervals_vcfs = PostprocessGermlineCNVCalls.genotyped_intervals_vcf
+        # File genotyped_intervals_vcfs_path_list = WriteIntervals.path_list
+        # Array[File] genotyped_intervals_vcf_indexes = PostprocessGermlineCNVCalls.genotyped_intervals_vcf_index
+        # File genotyped_intervals_vcf_indexes_path_list = WriteIntervalIndexes.path_list
+        # Array[File] genotyped_segments_vcfs = PostprocessGermlineCNVCalls.genotyped_segments_vcf
+        # File genotyped_segments_vcfs_path_list = WriteSegments.path_list
+        # Array[File] genotyped_segments_vcf_indexes = PostprocessGermlineCNVCalls.genotyped_segments_vcf_index
+        # File genotyped_segments_vcf_indexes_path_list = WriteSegmentIndexes.path_list
 
-        Array[File] denoised_copy_ratios = PostprocessGermlineCNVCalls.denoised_copy_ratios
-        Array[File] sample_qc_status_files = PostprocessGermlineCNVCalls.qc_status_file
-        Array[String] sample_qc_status_strings = PostprocessGermlineCNVCalls.qc_status_string
-        File model_qc_status_file = CollectModelQualityMetrics.qc_status_file
-        String model_qc_string = CollectModelQualityMetrics.qc_status_string
-        Array[File] denoised_copy_ratios = PostprocessGermlineCNVCalls.denoised_copy_ratios
+        # Array[File] denoised_copy_ratios = PostprocessGermlineCNVCalls.denoised_copy_ratios
+        # Array[File] sample_qc_status_files = PostprocessGermlineCNVCalls.qc_status_file
+        # Array[String] sample_qc_status_strings = PostprocessGermlineCNVCalls.qc_status_string
+        # File model_qc_status_file = CollectModelQualityMetrics.qc_status_file
+        # String model_qc_string = CollectModelQualityMetrics.qc_status_string
+        # Array[File] denoised_copy_ratios = PostprocessGermlineCNVCalls.denoised_copy_ratios
 
-        Array[File] gcnv_model_tars = GermlineCNVCallerCohortMode.gcnv_model_tar
-        Array[File] calling_configs = GermlineCNVCallerCohortMode.calling_config_json
-        Array[File] denoising_configs = GermlineCNVCallerCohortMode.denoising_config_json
-        Array[File] gcnvkernel_version = GermlineCNVCallerCohortMode.gcnvkernel_version_json
-        Array[File] sharded_interval_lists = GermlineCNVCallerCohortMode.sharded_interval_list
+        # Array[File] gcnv_model_tars = GermlineCNVCallerCohortMode.gcnv_model_tar
+        # Array[File] calling_configs = GermlineCNVCallerCohortMode.calling_config_json
+        # Array[File] denoising_configs = GermlineCNVCallerCohortMode.denoising_config_json
+        # Array[File] gcnvkernel_version = GermlineCNVCallerCohortMode.gcnvkernel_version_json
+        # Array[File] sharded_interval_lists = GermlineCNVCallerCohortMode.sharded_interval_list
+
+        String filtered_intervals = data_transfer.filtered_intervals_path
+        String contig_ploidy_model_tar = data_transfer.contig_ploidy_model_tar_path
+        Array[String] gcnv_model_tars = data_transfer.gcnv_model_tars_path
     }
 }
 
@@ -734,5 +750,61 @@ task WritePathMatrix {
 
     output {
         File path_list = outfile
+    }
+}
+
+task data_transfer {
+    input {
+        String cohort_entity_id
+        String bucket_url
+        File filtered_intervals
+        File contig_ploidy_model_tar
+        Array[File] gcnv_model_tars
+        Int additional_disk_gb = 10
+    }
+
+    Int input_size = ceil(size(filtered_intervals,"GB") + size(contig_ploidy_model_tar,"GB") + size(gcnv_model_tars))
+    Int disk_gb = input_size + additional_disk_gb
+
+    command <<<
+        echo -e "\n=== Sending Filtered Intervals ===\n"
+
+        gsutil -m cp ~{filtered_intervals} ~{bucket_url}/~{cohort_entity_id}/filtered_intervals/
+        echo "~{bucket_url}/~{cohort_entity_id}/filtered_intervals/$(basename ~{filtered_intervals})" > filtered_intervals_gs_url.txt
+
+        echo -e "\n=== Sending Contig Ploidy Model Tar ===\n"
+
+        gsutil -m cp ~{contig_ploidy_model_tar} ~{bucket_url}/~{cohort_entity_id}/contig_ploidy_model_tar/
+        echo "~{bucket_url}/~{cohort_entity_id}/contig_ploidy_model_tar/$(basename ~{contig_ploidy_model_tar})" > contig_ploidy_model_tar_gs_url.txt
+
+        echo -e "\n=== Sending GCNV Model Tars ===\n"
+
+        for file in ~{sep=" " gcnv_model_tars}; do
+        gsutil -m cp ${file} ~{bucket_url}/~{cohort_entity_id}/gcnv_model_tars/
+        echo "~{bucket_url}/~{cohort_entity_id}/gcnv_model_tars/$(basename ${file})" >> gcnv_model_tars_gs_urls.txt
+        done
+
+    >>>
+
+    output {
+        String filtered_intervals_path = read_string("filtered_intervals_gs_url.txt")
+        String contig_ploidy_model_tar_path = read_string("contig_ploidy_model_tar_gs_url.txt")
+        Array[String] gcnv_model_tars_path = read_lines("gcnv_model_tars_gs_urls.txt")
+    }
+
+    runtime {
+        docker: "google/cloud-sdk"
+        memory: "8GB"
+        disks: 'local-disk ' + disk_gb + ' HDD' 
+        preemptible: 5
+    }
+
+    meta {
+        description: "This task transfers files to a Google Storage bucket and returns the gs URLs."
+    }
+
+    parameter_meta {
+        cohort_entity_id: "The ID of the cohort"
+        bucket_url: "The Google Storage bucket URL"
     }
 }
