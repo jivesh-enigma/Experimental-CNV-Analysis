@@ -1,3 +1,4 @@
+# GCNV cohort 4.5.0
 # Workflow for creating a GATK GermlineCNVCaller denoising model and generating calls given a list of normal samples. Supports both WGS and WES.
 #
 # Notes:
@@ -763,7 +764,7 @@ task data_transfer {
         Int additional_disk_gb = 10
     }
 
-    Int input_size = ceil(size(filtered_intervals,"GB") + size(contig_ploidy_model_tar,"GB") + size(gcnv_model_tars))
+    Int input_size = ceil(size(filtered_intervals,"GB") + size(contig_ploidy_model_tar,"GB") + size(gcnv_model_tars,"GB"))
     Int disk_gb = input_size + additional_disk_gb
 
     command <<<
