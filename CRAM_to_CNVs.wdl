@@ -392,6 +392,7 @@ workflow CNVGermlineCaseWorkflow {
                 vepOutputFile=vep_task.VEP_Output,
                 gatkOutputFile=GATKVariantsToTable.GATK_output,
                 Rscript_file = vep_Rscript_file,
+                diskSpace = diskspace_combineOutputFiles
         }
         
         File vepannotated_vcfs = combineOutputFiles.vepannotated_vcf
