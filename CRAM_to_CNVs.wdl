@@ -848,6 +848,8 @@ task vep_task {
         Int bootDiskSizeGb_VEP
         Int cpu_VEP
         Int diskGb_VEP
+        Int disk_factor = 2
+        Int disk_gb = diskGb_VEP * disk_factor
         Int memoryGb_VEP
         
         # Cache files
@@ -955,7 +957,7 @@ task vep_task {
         bootDiskSizeGb : bootDiskSizeGb_VEP
         preemptible    : 0
         cpu            : "~{cpu_VEP}"
-        disks          : "local-disk ~{diskGb_VEP} SSD"
+        disks          : "local-disk ~{disk_gb} SSD"
         memory         : "~{memoryGb_VEP} GB"
     }
 
